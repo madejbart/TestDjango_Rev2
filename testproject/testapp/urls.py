@@ -20,4 +20,6 @@ urlpatterns = [
     path("devices/<int:pk>/delete", views.DelDeviceView.as_view(), name="del_dev"),
     # Page for deleting a variable
     path("variables/<int:pk>/delete", views.DelVariableView.as_view(), name="del_var"),
+
+    path("devices/modbus/add", views.ModbusDeviceCreateView.as_view(), name="new_modbus_device")
 ]

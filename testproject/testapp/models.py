@@ -14,9 +14,11 @@ class Device(models.Model):
     date = models.DateTimeField(blank=True, null=True)
     device_model = models.CharField(blank=True, null=True, max_length=255)
     device_ip = models.CharField(blank=True, null=True, max_length=255)
+    comm_protocol = models.CharField(blank=True, null=True, max_length=255)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
 
-
+    class Meta:
+        db_table = 'device'
 
     def __str__(self):
         return f"{self.device_name} ({self.device_ip})"
@@ -46,6 +48,8 @@ class Value(models.Model):
     var = models.ForeignKey('Var', models.DO_NOTHING, blank=True, null=True)
     value = models.TextField(blank=True, null=True)  # This field type is a guess.
 
+    class Meta:
+        db_table = 'value'
 
 class Var(models.Model):
     value_name = models.CharField(blank=True, null=True, max_length=255)
@@ -56,12 +60,19 @@ class Var(models.Model):
     frequency = models.IntegerField(blank=True, null=True)
     enabled = models.BooleanField(blank=True, null=True)
 
+    class Meta:
+        db_table = 'var'
+
 class Devmtcpserver(models.Model):
     device_name = models.CharField(blank=True, null=True, max_length=255)
     date = models.DateTimeField(blank=True, null=True)
     device_model = models.CharField(blank=True, null=True, max_length=255)
     device_ip = models.CharField(blank=True, null=True, max_length=255)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'deviceserver'
 
 class Mtcpclient(models.Model):
     name = models.CharField(blank=True, null=True, max_length=255)
@@ -79,3 +90,21 @@ class Registers(models.Model):
     client = models.ForeignKey(Mtcpclient, models.DO_NOTHING, blank=True, null=True)
     date_updated = models.DateTimeField(blank=True, null=False, default=datetime.now())
     regnumber = models.IntegerField(blank=True, null=True)
+
+
+class ModbusDevice(models.Model):
+    name = models.CharField(max_length=100)
+    ip = models.CharField(max_length=20)
+    reg_first = models.IntegerField(blank=True, null=True)
+    reg_amount = models.IntegerField(blank=True, null=True)
+    date_updated = models.DateTimeField(blank=True, null=True)
+    frequency = models.IntegerField(blank=True, null=True)
+    enabled = models.BooleanField(blank=True, null=True)
+    user = models.ForeignKey(to=User, on_delete=models.PROTECT, related_name="modbus_devices")
+
+
+class ModbusDeviceValue(models.Model):
+    device = models.ForeignKey(to=ModbusDevice, on_delete=models.PROTECT, related_name="values")
+    date_updated = models.DateTimeField(auto_now=True)
+    value = models.JSONField()
+

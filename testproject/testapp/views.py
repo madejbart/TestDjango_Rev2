@@ -5,7 +5,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, UpdateView, CreateView, DeleteView
 
 from .forms import VariableForm, DeviceForm
-from .models import Value, Var, Device
+from .models import Value, Var, Device, ModbusDevice
+
 
 # Create your views here.
 
@@ -70,3 +71,10 @@ class DelVariableView(DeleteView):
     success_url = reverse_lazy("testapp:variables")
     form_class = VariableForm
     model = Var
+
+
+class ModbusDeviceCreateView(CreateView):
+    model = ModbusDevice
+    success_url = reverse_lazy("uzupelnic")
+    template_name =  "testapp/new_modbus_device.html"
+    fields = "__all__"
